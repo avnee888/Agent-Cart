@@ -1,0 +1,462 @@
+<div id="ac-root" class="ac-root">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+    .ac-root {
+      --bg: #0B1020;
+      --bg-panel: #121933;
+      --bg-panel-2: #0E1428;
+      --line: #232C4D;
+      --text: #C9D0E8;
+      --text-dim: #7C87AC;
+      --white: #F5F7FC;
+      --teal: #00D9C0;
+      --amber: #FFB454;
+      --rose: #FF6B7A;
+      --violet: #8C7CFF;
+
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 40px 24px 56px;
+      display: flex;
+      justify-content: center;
+    }
+    .ac-root *, .ac-root *::before, .ac-root *::after { box-sizing: border-box; }
+
+    .ac-shell { width: 100%; max-width: 1040px; }
+
+    .ac-hero { margin-bottom: 28px; }
+    .ac-eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--teal);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .ac-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 8px var(--teal); }
+    .ac-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(32px, 5vw, 48px);
+      color: var(--white);
+      letter-spacing: -0.01em;
+      margin: 0 0 8px;
+    }
+    .ac-title span { color: var(--teal); }
+    .ac-sub {
+      color: var(--text-dim);
+      font-size: 15px;
+      max-width: 560px;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .ac-prompt-row {
+      margin-top: 24px;
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+      background: var(--bg-panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 6px;
+    }
+    .ac-prompt-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      color: var(--teal);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      white-space: nowrap;
+    }
+    .ac-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--white);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14.5px;
+      padding: 12px 4px;
+    }
+    .ac-input::placeholder { color: var(--text-dim); }
+    .ac-run-btn {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      background: var(--teal);
+      color: #06231F;
+      border: none;
+      border-radius: 8px;
+      padding: 0 20px;
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.12s ease;
+    }
+    .ac-run-btn:hover:not(:disabled) { background: #33E6CF; transform: translateY(-1px); }
+    .ac-run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .ac-examples { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .ac-chip {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      color: var(--text-dim);
+      background: var(--bg-panel-2);
+      border: 1px solid var(--line);
+      border-radius: 100px;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+    .ac-chip:hover { color: var(--white); border-color: var(--teal); }
+
+    .ac-grid {
+      margin-top: 32px;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 760px) {
+      .ac-grid { grid-template-columns: 1fr; }
+    }
+
+    .ac-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .ac-panel-head {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ac-trace { padding: 14px 16px; min-height: 220px; }
+    .ac-trace-empty { color: var(--text-dim); font-size: 13px; font-family: 'IBM Plex Mono', monospace; }
+    .ac-step { display: flex; gap: 10px; margin-bottom: 14px; animation: acFade 0.35s ease; }
+    .ac-step:last-child { margin-bottom: 0; }
+    .ac-step-marker {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid var(--line);
+      flex-shrink: 0; margin-top: 2px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ac-step-marker.done { border-color: var(--teal); background: rgba(0,217,192,0.12); }
+    .ac-step-marker.active { border-color: var(--amber); animation: acPulse 1s infinite; }
+    .ac-step-marker.done::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
+    .ac-step-body { flex: 1; }
+    .ac-step-title { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: var(--white); }
+    .ac-step-time { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-dim); margin-left: 8px; }
+    .ac-step-detail { font-size: 12px; color: var(--text-dim); margin-top: 3px; line-height: 1.5; }
+
+    .ac-results { padding: 16px; min-height: 220px; }
+    .ac-results-empty {
+      color: var(--text-dim); font-size: 13.5px; line-height: 1.6;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 220px; text-align: center; padding: 20px;
+    }
+    .ac-card {
+      display: flex; gap: 14px;
+      background: var(--bg-panel-2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      animation: acSlide 0.4s ease;
+    }
+    .ac-card:last-child { margin-bottom: 0; }
+    .ac-rank {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--teal);
+      width: 30px;
+      flex-shrink: 0;
+    }
+    .ac-card-body { flex: 1; min-width: 0; }
+    .ac-card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .ac-card-title { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15.5px; color: var(--white); }
+    .ac-card-price { font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--amber); font-size: 14.5px; white-space: nowrap; }
+    .ac-card-reason { font-size: 13px; color: var(--text); line-height: 1.55; margin: 6px 0 10px; }
+    .ac-card-actions { display: flex; align-items: center; gap: 10px; }
+    .ac-buy-btn {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      background: transparent;
+      color: var(--teal);
+      border: 1px solid var(--teal);
+      border-radius: 7px;
+      padding: 7px 12px;
+      cursor: pointer;
+    }
+    .ac-buy-btn:hover { background: rgba(0,217,192,0.1); }
+    .ac-buy-btn.bought { color: var(--violet); border-color: var(--violet); cursor: default; }
+    .ac-order-id { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-dim); }
+
+    .ac-note { margin-top: 14px; font-size: 11.5px; color: var(--text-dim); font-family: 'IBM Plex Mono', monospace; }
+    .ac-error { color: var(--rose); font-size: 13px; font-family: 'IBM Plex Mono', monospace; padding: 4px 0; }
+
+    @keyframes acFade { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes acSlide { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes acPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,180,84,0.5); } 50% { box-shadow: 0 0 0 4px rgba(255,180,84,0); } }
+  </style>
+
+  <div class="ac-shell">
+    <div class="ac-hero">
+      <div class="ac-eyebrow"><span class="ac-dot"></span>agent status: idle</div>
+      <h1 class="ac-title">Agent<span>Cart</span></h1>
+      <p class="ac-sub">Tell it what you're shopping for. It parses your intent, searches a live catalog, reasons through the trade-offs, and checks out on its own — no clicking through filters.</p>
+
+      <div class="ac-prompt-row">
+        <span class="ac-prompt-tag">agent&gt;</span>
+        <input id="ac-input" class="ac-input" type="text" placeholder="find me a laptop under ₹60000 for video editing" />
+        <button id="ac-run" class="ac-run-btn">Run agent</button>
+      </div>
+      <div class="ac-examples">
+        <span class="ac-chip" data-q="a smartphone under ₹40000 with a great camera">smartphone under ₹40000, great camera</span>
+        <span class="ac-chip" data-q="lightweight running shoes for men under ₹5000">running shoes under ₹5000</span>
+        <span class="ac-chip" data-q="a budget laptop for college under ₹35000">budget laptop for college</span>
+      </div>
+    </div>
+
+    <div class="ac-grid">
+      <div class="ac-panel">
+        <div class="ac-panel-head"><span>Agent trace</span></div>
+        <div id="ac-trace" class="ac-trace">
+          <div class="ac-trace-empty">// waiting for a task</div>
+        </div>
+      </div>
+      <div class="ac-panel">
+        <div class="ac-panel-head"><span>Recommendations</span></div>
+        <div id="ac-results" class="ac-results">
+          <div class="ac-results-empty">Run a search above — ranked picks with the agent's reasoning will land here.</div>
+        </div>
+      </div>
+    </div>
+    <div class="ac-note">Catalog: built-in sample dataset (laptops, smartphones, shoes, tablets, headphones) · Prices converted from USD at ≈₹83/$ · Checkout is simulated — no real orders are placed.</div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const root = document.getElementById('ac-root');
+  const input = document.getElementById('ac-input');
+  const runBtn = document.getElementById('ac-run');
+  const traceEl = document.getElementById('ac-trace');
+  const resultsEl = document.getElementById('ac-results');
+  const eyebrow = root.querySelector('.ac-eyebrow');
+  const USD_TO_INR = 83;
+
+  // Built-in catalog (artifact sandbox blocks calls to third-party APIs like dummyjson.com,
+  // so the agent's "tool" here is this local dataset instead of a live network fetch).
+  const CATALOG = {
+    laptops: [
+      { id: 'lp1', title: 'Acer Aspire 7 (Ryzen 5, GTX 1650)', brand: 'Acer', price: 549, rating: 4.3, description: 'Dedicated GTX 1650 GPU, 8GB RAM, good for light video editing and gaming on a budget.' },
+      { id: 'lp2', title: 'Lenovo IdeaPad Slim 3 (i5, integrated)', brand: 'Lenovo', price: 429, rating: 4.1, description: '8GB RAM, no dedicated GPU, great for browsing, docs and light coding.' },
+      { id: 'lp3', title: 'HP Pavilion 15 (Ryzen 5, integrated)', brand: 'HP', price: 469, rating: 4.0, description: 'Slim build, 16GB RAM option, decent for multitasking and office work.' },
+      { id: 'lp4', title: 'ASUS TUF Gaming F15 (i5, RTX 3050)', brand: 'ASUS', price: 699, rating: 4.4, description: 'RTX 3050 GPU, 16GB RAM, handles video editing and gaming well.' },
+      { id: 'lp5', title: 'Dell Inspiron 15 (i3, integrated)', brand: 'Dell', price: 379, rating: 3.9, description: 'Entry-level, 8GB RAM, best for basic study and browsing tasks.' },
+      { id: 'lp6', title: 'MacBook Air M1 (8GB/256GB)', brand: 'Apple', price: 849, rating: 4.8, description: 'Apple M1 chip, excellent battery life, strong for editing and creative work.' },
+      { id: 'lp7', title: 'ASUS VivoBook 15 (Ryzen 7, integrated)', brand: 'ASUS', price: 519, rating: 4.2, description: '16GB RAM, no dedicated GPU, solid all-rounder for study and productivity.' },
+      { id: 'lp8', title: 'Lenovo Legion 5 (Ryzen 5, RTX 3060)', brand: 'Lenovo', price: 899, rating: 4.6, description: 'RTX 3060 GPU, 16GB RAM, built for gaming and heavier video editing.' }
+    ],
+    smartphones: [
+      { id: 'sp1', title: 'Samsung Galaxy M14', brand: 'Samsung', price: 179, rating: 4.0, description: '50MP camera, 6000mAh battery, budget-friendly everyday phone.' },
+      { id: 'sp2', title: 'Redmi Note 13 Pro', brand: 'Xiaomi', price: 249, rating: 4.3, description: '200MP camera, AMOLED display, strong camera performance for the price.' },
+      { id: 'sp3', title: 'iPhone 13', brand: 'Apple', price: 599, rating: 4.7, description: 'Dual 12MP camera system, A15 chip, excellent low-light photography.' },
+      { id: 'sp4', title: 'OnePlus Nord CE 3', brand: 'OnePlus', price: 279, rating: 4.2, description: '108MP main camera, fast charging, smooth performance for daily use.' },
+      { id: 'sp5', title: 'Google Pixel 7a', brand: 'Google', price: 449, rating: 4.5, description: 'Best-in-class computational photography camera at a mid-range price.' },
+      { id: 'sp6', title: 'Realme Narzo 60', brand: 'Realme', price: 199, rating: 3.9, description: '64MP camera, decent all-rounder for budget-conscious buyers.' }
+    ],
+    'mens-shoes': [
+      { id: 'ms1', title: 'ASICS Gel-Excite 9', brand: 'ASICS', price: 55, rating: 4.4, description: 'Lightweight cushioned running shoe, good for daily runs.' },
+      { id: 'ms2', title: 'Puma Softride Rift', brand: 'Puma', price: 45, rating: 4.1, description: 'Soft foam midsole, comfortable for casual running and walking.' },
+      { id: 'ms3', title: 'Adidas Duramo SL', brand: 'Adidas', price: 40, rating: 4.0, description: 'Breathable mesh upper, budget running shoe for beginners.' },
+      { id: 'ms4', title: 'Nike Revolution 6', brand: 'Nike', price: 50, rating: 4.3, description: 'Lightweight foam cushioning, versatile for running and gym.' },
+      { id: 'ms5', title: 'Skechers Go Run Consistent', brand: 'Skechers', price: 48, rating: 4.2, description: 'Responsive cushioning, good arch support for longer runs.' }
+    ],
+    tablets: [
+      { id: 'tb1', title: 'Samsung Galaxy Tab A9', brand: 'Samsung', price: 179, rating: 4.1, description: '8GB storage-friendly tablet for browsing, video and light note-taking.' },
+      { id: 'tb2', title: 'Lenovo Tab M10 Plus', brand: 'Lenovo', price: 199, rating: 4.0, description: 'Large display, decent battery life, good for media consumption.' },
+      { id: 'tb3', title: 'iPad 9th Gen', brand: 'Apple', price: 329, rating: 4.6, description: 'A13 chip, smooth performance, great app ecosystem for productivity.' },
+      { id: 'tb4', title: 'realme Pad 2', brand: 'realme', price: 189, rating: 4.0, description: '2K display, 7040mAh battery, solid for entertainment and study.' }
+    ],
+    headphones: [
+      { id: 'hp1', title: 'boAt Rockerz 450', brand: 'boAt', price: 25, rating: 4.1, description: 'Over-ear wireless headphones with 15hr battery, budget pick.' },
+      { id: 'hp2', title: 'JBL Tune 510BT', brand: 'JBL', price: 30, rating: 4.3, description: 'Lightweight, punchy bass, 40hr battery life.' },
+      { id: 'hp3', title: 'Sony WH-CH520', brand: 'Sony', price: 45, rating: 4.4, description: 'Clear sound, comfortable fit, good for long listening sessions.' },
+      { id: 'hp4', title: 'Sennheiser HD 350BT', brand: 'Sennheiser', price: 90, rating: 4.5, description: 'Balanced sound signature, aptX support, great for audiophiles on a budget.' }
+    ]
+  };
+
+  root.querySelectorAll('.ac-chip').forEach(chip => {
+    chip.addEventListener('click', () => { input.value = chip.dataset.q; });
+  });
+
+  function setStatus(text, color) {
+    eyebrow.innerHTML = `<span class="ac-dot" style="background:${color};box-shadow:0 0 8px ${color}"></span>agent status: ${text}`;
+  }
+
+  function resetTrace() {
+    traceEl.innerHTML = '';
+  }
+
+  function addStep(title, { active = true } = {}) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ac-step';
+    const time = new Date().toLocaleTimeString();
+    wrap.innerHTML = `
+      <div class="ac-step-marker ${active ? 'active' : 'done'}"></div>
+      <div class="ac-step-body">
+        <span class="ac-step-title">${title}</span><span class="ac-step-time">${time}</span>
+        <div class="ac-step-detail"></div>
+      </div>`;
+    traceEl.appendChild(wrap);
+    return wrap;
+  }
+
+  function completeStep(stepEl, detail) {
+    const marker = stepEl.querySelector('.ac-step-marker');
+    marker.classList.remove('active');
+    marker.classList.add('done');
+    if (detail) stepEl.querySelector('.ac-step-detail').textContent = detail;
+  }
+
+  function showError(msg) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ac-error';
+    wrap.textContent = '⚠ ' + msg;
+    traceEl.appendChild(wrap);
+    setStatus('error', '#FF6B7A');
+  }
+
+  async function callClaude(system, userText) {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system,
+        messages: [{ role: 'user', content: userText }]
+      })
+    });
+    if (!response.ok) throw new Error('Claude API request failed (' + response.status + ')');
+    const data = await response.json();
+    const text = (data.content || []).map(b => b.text || '').join('\n');
+    const clean = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    return JSON.parse(clean);
+  }
+
+  function getCategories() {
+    return Object.keys(CATALOG);
+  }
+
+  function getProductsForCategory(slug) {
+    return CATALOG[slug] || [];
+  }
+
+  function renderResults(items, productMap) {
+    resultsEl.innerHTML = '';
+    if (!items.length) {
+      resultsEl.innerHTML = '<div class="ac-results-empty">No strong matches found in this catalog for that request. Try a different query.</div>';
+      return;
+    }
+    items.forEach((item, idx) => {
+      const product = productMap[item.id] || {};
+      const priceInr = Math.round((product.price || item.price || 0) * USD_TO_INR);
+      const card = document.createElement('div');
+      card.className = 'ac-card';
+      card.innerHTML = `
+        <div class="ac-rank">${String(idx + 1).padStart(2, '0')}</div>
+        <div class="ac-card-body">
+          <div class="ac-card-top">
+            <span class="ac-card-title">${item.title || product.title || 'Product'}</span>
+            <span class="ac-card-price">₹${priceInr.toLocaleString('en-IN')}</span>
+          </div>
+          <p class="ac-card-reason">${item.reason || ''}</p>
+          <div class="ac-card-actions">
+            <button class="ac-buy-btn">Buy now</button>
+            <span class="ac-order-id"></span>
+          </div>
+        </div>`;
+      const buyBtn = card.querySelector('.ac-buy-btn');
+      const orderSpan = card.querySelector('.ac-order-id');
+      buyBtn.addEventListener('click', () => {
+        if (buyBtn.classList.contains('bought')) return;
+        buyBtn.classList.add('bought');
+        buyBtn.textContent = 'Order placed ✓';
+        const orderId = 'AC-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+        orderSpan.textContent = 'order ' + orderId + ' · checkout completed autonomously';
+      });
+      resultsEl.appendChild(card);
+    });
+  }
+
+  async function run() {
+    const query = input.value.trim();
+    if (!query) { input.focus(); return; }
+
+    runBtn.disabled = true;
+    resetTrace();
+    resultsEl.innerHTML = '<div class="ac-results-empty">Working on it…</div>';
+    setStatus('running', '#FFB454');
+
+    try {
+      const s1 = addStep('Parsing your request');
+      const categories = getCategories();
+      const intent = await callClaude(
+        'You are a shopping intent parser for an e-commerce catalog. Given a user query and a list of valid category slugs, respond with ONLY a raw JSON object, no markdown, no preamble: {"category": "<one slug from the given list that best matches>", "budget_inr": <number or null>, "use_case": "<short string>", "priorities": ["..."]}',
+        'User query: "' + query + '"\nValid category slugs: ' + JSON.stringify(categories)
+      );
+      completeStep(s1, 'category → ' + intent.category + (intent.budget_inr ? ' · budget ₹' + intent.budget_inr.toLocaleString('en-IN') : ' · no budget stated'));
+
+      const s2 = addStep('Searching catalog');
+      const products = getProductsForCategory(intent.category);
+      completeStep(s2, products.length + ' items found in "' + intent.category + '"');
+
+      const s3 = addStep('Comparing options against your priorities');
+      const trimmed = products.slice(0, 40).map(p => ({
+        id: p.id, title: p.title, price: p.price, brand: p.brand,
+        rating: p.rating, description: (p.description || '').slice(0, 160)
+      }));
+      const ranked = await callClaude(
+        'You are a shopping recommendation agent. Rank the given products for the user\'s stated need and budget. Budget is in INR; product prices are in USD (approx 1 USD = 83 INR) — convert to compare. Respond with ONLY a raw JSON array, no markdown, no preamble, of up to 4 objects ordered best-first: [{"id": <product id>, "title": "...", "price": <usd price>, "reason": "<one concise, specific sentence on why this fits>"}]',
+        'User need: ' + JSON.stringify(intent) + '\nCandidate products: ' + JSON.stringify(trimmed)
+      );
+      completeStep(s3, 'ranked ' + ranked.length + ' candidates');
+
+      const s4 = addStep('Recommendation ready', { active: false });
+      completeStep(s4, 'showing top picks with reasoning');
+
+      const productMap = {};
+      products.forEach(p => { productMap[p.id] = p; });
+      renderResults(ranked, productMap);
+      setStatus('idle', '#00D9C0');
+    } catch (err) {
+      showError(err.message || 'Something went wrong');
+      resultsEl.innerHTML = '<div class="ac-results-empty">The agent hit an error — check the trace on the left.</div>';
+    } finally {
+      runBtn.disabled = false;
+    }
+  }
+
+  runBtn.addEventListener('click', run);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') run(); });
+})();
+</script>
