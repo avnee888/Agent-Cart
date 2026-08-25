@@ -1,49 +1,47 @@
-# AgentCart — Local Backend
+# AgentCart — Autonomous Shopping Assistant Agent
 
-This is a minimal Express server that lets AgentCart run fully standalone on your machine,
-outside of Claude's artifact environment. It keeps your Anthropic API key on the server
-(never exposed in browser JS) and proxies requests to Anthropic on the frontend's behalf.
+AgentCart is an AI agent that turns a plain-language shopping request into a completed purchase decision — no filters, no scrolling, no comparison spreadsheets. Tell it what you need, and it reasons through the trade-offs on its own.
 
-## Setup
+Built for **Razorpay AI Builder Internship 2026 — Track 1: AI Growth & Agentic Commerce**.
 
-1. **Install Node.js 18+** if you don't have it (check with `node -v`).
+## What it does
 
-2. **Install dependencies** — in this folder, run:
-   ```
-   npm install
-   ```
+Give it a goal like *"find me a laptop under ₹60000 for video editing"* and the agent:
 
-3. **Add your API key** — copy `.env.example` to a new file named `.env`, then paste in
-   your key from [console.anthropic.com](https://console.anthropic.com):
-   ```
-   ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxx
-   PORT=3000
-   ```
+1. **Parses your intent** — extracts category, budget, use case, and priorities from your natural-language request
+2. **Searches the catalog** — pulls matching products
+3. **Compares options** — reasons about which products actually fit your stated need, not just keyword matches
+4. **Recommends with explanation** — ranks the top picks and explains *why* each one fits
+5. **Checks out autonomously** — completes a (simulated) purchase when you confirm
 
-4. **Start the server**:
-   ```
-   npm start
-   ```
-   You should see:
-   ```
-   ✅ AgentCart backend running at http://localhost:3000
-      Open http://localhost:3000/agentcart.html in your browser
-   ```
+Every step is visible in a live "agent trace" panel, so you can see the reasoning happen in real time rather than getting a single black-box answer.
 
-5. **Open the app** — go to `http://localhost:3000/agentcart.html` in your browser.
-   "Run agent" will now work end-to-end.
+## Why this matters for agentic commerce
 
-## How it works
+Most shopping tools stop at search or recommendation. AgentCart demonstrates the next layer: an agent that takes **autonomous action** (completing checkout) based on multi-step reasoning, not just a single LLM call. This is the core pattern behind agentic commerce — agents that act on a user's behalf, not just answer questions.
 
-- `agentcart.html`'s frontend code calls `/api/chat` (relative path — same origin, no CORS needed)
-  instead of calling `api.anthropic.com` directly.
-- `server.js` receives that request, attaches your `ANTHROPIC_API_KEY` server-side, and forwards
-  it to the real Anthropic API.
-- Your key never touches the browser or gets exposed in page source — this is the same pattern
-  any production app uses to call an LLM API safely from a client.
+## Tech stack
 
-## Notes
+- **Frontend**: Vanilla HTML/CSS/JS — no framework overhead for a focused demo
+- **LLM**: Claude (Anthropic API) for intent parsing and ranked recommendation reasoning
+- **Backend**: Minimal Express server (`server.js`) that proxies API calls, keeping the API key server-side and out of client code
+- **Catalog**: A built-in sample product dataset (laptops, smartphones, shoes, tablets, headphones) — swappable in a production setting for a real merchant/product API
 
-- `.env` is git-ignored — never commit your real API key to GitHub.
-- If you deploy this (e.g. to Render, Railway, Vercel), set `ANTHROPIC_API_KEY` as an environment
-  variable in that platform's dashboard rather than committing a `.env` file.
+## Running it
+
+See [`README.md` setup instructions in the backend folder] or:
+
+```
+npm install
+cp .env.example .env    # add your Anthropic API key
+npm start
+```
+
+Then open `http://localhost:3000/agentcart.html`.
+
+## What's simulated vs. real
+
+- **Real**: LLM-driven intent parsing, product ranking, and reasoning — actual Claude API calls
+- **Simulated**: The product catalog (local dataset instead of a live inventory API) and checkout (generates a mock order ID rather than processing a real payment)
+
+In production, the catalog and checkout layers would connect to real merchant/product and payment APIs — the agent reasoning logic itself would stay the same.
