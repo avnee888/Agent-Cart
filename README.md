@@ -2,7 +2,7 @@
 
 AgentCart is an AI agent that turns a plain-language shopping request into a completed purchase decision — no filters, no scrolling, no comparison spreadsheets. Tell it what you need, and it reasons through the trade-offs on its own.
 
-Built for **Razorpay AI Builder Internship 2026 — Track 1: AI Growth & Agentic Commerce**.
+
 
 ## What it does
 
